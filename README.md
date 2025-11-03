@@ -1,61 +1,170 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
-
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <a href="https://laravel.com" target="_blank">
+    <img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo">
+  </a>
 </p>
 
-## About Laravel
+<p align="center">
+  <a href="https://github.com/THPL28/thpl/actions"><img src="https://github.com/THPL28/thpl/workflows/CI/badge.svg" alt="CI/CD Status"></a>
+  <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
+  <a href="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
+  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/license-MIT-brightgreen" alt="License"></a>
+</p>
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+# THPL - 🌐 Website Oficial Institucional
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+O **Website Oficial da THPL** é um projeto institucional e de serviços focado em estabelecer uma **presença digital profissional e robusta** para a empresa. Desenvolvido com **PHP e Laravel**, o site garante performance, segurança e uma **experiência de usuário (UX) moderna**.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+O projeto é mantido através de um pipeline de **CI/CD (Integração e Deploy Contínuos)** para garantir que todas as atualizações sejam testadas e publicadas automaticamente.
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## ✨ Principais Objetivos
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+O desenvolvimento deste projeto foi guiado pelos seguintes pilares:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+* **Exposição Profissional:** Apresentar os **serviços da THPL** de forma clara, otimizada e com foco em conversão.
+* **UX/UI Moderna:** Entregar uma interface intuitiva, rápida e totalmente **responsiva** em todos os dispositivos.
+* **Performance e Segurança:** Implementar boas práticas do ecossistema Laravel/PHP para garantir um sistema escalável e seguro.
+* **Automação de Deploy:** Manter o ambiente de produção sempre atualizado e estável via **CI/CD automatizado**.
 
-## Laravel Sponsors
+---
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## 💻 Tecnologias de Ponta
 
-### Premium Partners
+Um stack moderno e robusto foi escolhido para o projeto:
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### Backend & Framework
+* **PHP 8+:** Linguagem de programação principal.
+* **Laravel 10:** Framework full-stack, utilizado para API, rotas e lógica de negócio.
+* **Blade Templates:** Motor de template nativo para views dinâmicas.
+* **MySQL:** Banco de dados relacional para persistência de dados.
 
-## Contributing
+### Frontend & Estilo
+* **Tailwind CSS / Bootstrap:** Utilizado para desenvolvimento rápido e layouts totalmente responsivos.
+* **JavaScript (Alpine.js / Vue.js):** Para interatividade de frontend, componentes dinâmicos e SPA (opcional).
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### DevOps & Ferramentas
+* **GitHub Actions:** Configuração de pipeline para CI/CD automatizado (`.github/workflows/ci.yml`).
+* **Composer / NPM:** Gerenciamento de dependências.
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## 🛠 Funcionalidades Implementadas
 
-## Security Vulnerabilities
+O projeto inclui diversas funcionalidades essenciais para um website institucional:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+* **Página Inicial (Landing Page):** Apresentação da empresa e chamada para ação (CTA).
+* **Seção de Serviços:** Páginas detalhadas para cada solução oferecida.
+* **Formulário de Contato:** Funcional e seguro, com envio de e-mail integrado.
+* **Dashboard Administrativo (Opcional):** Área restrita para gerenciamento de conteúdo via CMS.
+* **Autenticação Completa:** Sistema de login, registro e recuperação de senha.
+* **SEO Básico:** Otimização de meta tags e estrutura para melhor indexação em buscadores.
+* **Integração:** Links para redes sociais e potencial integração com Google Analytics.
 
-## License
+---
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## ⚙️ CI/CD e Estrutura de Código
+
+O fluxo de trabalho de desenvolvimento é automatizado via GitHub Actions:
+
+### Pipeline CI/CD
+* **CI (Integração Contínua):** Executa testes unitários, testes de integração e verificações de qualidade (linting, padrões) em cada `push` para garantir a integridade do código.
+* **CD (Deploy Contínuo):** Realiza o deploy automático para o servidor de produção após a aprovação de todos os testes no branch principal.
+
+### Estrutura de Diretórios
+
+```text
+thpl/
+├── app/                # Lógica principal (Modelos, Controladores, Serviços)
+├── database/           # Migrations, Seeds e Factories
+├── public/             # Assets compilados e ponto de entrada
+├── resources/          # Views Blade e assets (JS, CSS)
+├── routes/             # Definição de rotas (web, api)
+├── tests/              # Testes automatizados (Unitários e Feature)
+└── .github/workflows/  # Configuração de CI/CD
+
+## 🚀 Instalação Local
+
+### Siga os passos abaixo para configurar o projeto em seu ambiente local:
+
+1. Clone o Repositório
+Bash
+
+git clone git@github.com:THPL28/thpl.git
+cd thpl
+2. Configuração e Dependências
+Crie seu arquivo de ambiente (.env) e instale as dependências.
+
+Bash
+
+cp .env.example .env
+composer install
+npm install
+npm run dev
+3. Setup do Laravel
+Gere a chave da aplicação e configure o banco de dados (certifique-se de configurar o .env com suas credenciais).
+
+Bash
+
+php artisan key:generate
+php artisan migrate --seed
+4. Execução
+Inicie o servidor de desenvolvimento do Laravel.
+
+Bash
+
+php artisan serve
+O site estará acessível em http://127.0.0.1:8000.
+
+## 🧪 Testes Automatizados
+O projeto utiliza testes unitários e de feature para garantir a qualidade do código.
+
+Os testes estão localizados em tests/.
+
+O GitHub Actions executa os testes automaticamente em cada push.
+
+Para executar os testes localmente, use o comando:
+
+php artisan test
+
+🛡 Segurança e Boas Práticas
+
+### Segurança
+Proteção contra vulnerabilidades comuns (CSRF, XSS, injeção SQL).
+
+Senhas criptografadas com bcrypt.
+
+Uso de Middleware de autenticação e autorização.
+
+Boas Práticas
+Adesão ao Padrão MVC (Model-View-Controller).
+
+Uso de Repositórios e Services para separar a lógica de negócio dos Controllers.
+
+Versionamento Semântico e commits seguindo Conventional Commits.
+
+## 🤝 Contribuição
+Contribuições são muito bem-vindas! Para contribuir com melhorias ou novas funcionalidades:
+
+Fork o repositório.
+
+Crie uma nova branch de feature: git checkout -b feature/nome-da-feature
+
+Faça commit das suas alterações (idealmente seguindo Conventional Commits).
+
+Faça push e abra um Pull Request.
+
+## 📌 Licença
+Este projeto é open-source e está licenciado sob a Licença MIT. Consulte o arquivo LICENSE para mais detalhes.
+
+## 📞 Contato
+Fique à vontade para entrar em contato:
+
+Email: thpldevweb@gmail.com
+
+LinkedIn: [Tiago Looze](https://www.linkedin.com/in/tiago-looze-b1a0001b7/)
+
+GitHub: @THPL28
+
+<p align="center"> Desenvolvido em Laravel PHP por Tiago Looze </p>
