@@ -51,11 +51,13 @@ jobs:
           local-dir: ./ 
           server-dir: ${{ secrets.KINGHOST_TARGET_PATH }}
           exclude: |
-            .git/
-            .github/
+            .git/**
+            .github/**
             .env
-            vendor/
-            node_modules/
-            storage/framework/cache/data/
-            storage/logs/
-            tests/
+            vendor/**
+            node_modules/**
+            storage/framework/cache/data/**
+            storage/logs/**
+            tests/**
+            README.md
+            *.md
