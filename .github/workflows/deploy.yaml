@@ -9,7 +9,10 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     name: 🚀 Deploy para KingHost
-
+    
+    environment:
+      name: KINGHOST_SERVER 
+      
     steps:
       - name: 📥 Checkout do código
         uses: actions/checkout@v4
@@ -44,7 +47,7 @@ jobs:
         uses: SamKirkland/FTP-Deploy-Action@v4.3.0
         with:
           server: ${{ secrets.KINGHOST_SERVER }}
-          username: ${{ secrets.KINGHOST_USER }}
+          username: ${{ secrets.           }}
           password: ${{ secrets.KINGHOST_PASSWORD }}
           protocol: sftp
           port: 22
