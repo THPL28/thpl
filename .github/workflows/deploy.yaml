@@ -53,9 +53,9 @@ jobs:
           exclude: |
             .git/
             .github/
-            node_modules/
+            .env
             vendor/
+            node_modules/
             storage/framework/cache/data/
             storage/logs/
             tests/
-            .env
