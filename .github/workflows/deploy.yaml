@@ -18,11 +18,12 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
-          extensions: mbstring, bcmath, intl, mysql, xml, curl, zip
+          extensions: mbstring, bcmath, intl, pdo_mysql, xml, curl, zip
           coverage: none
+          tools: composer
 
       - name: 📦 Instalar dependências do Composer
-        run: composer install --no-dev --optimize-autoloader
+        run: composer install --no-dev --prefer-dist --optimize-autoloader
 
       - name: 📝 Criar arquivo .env a partir do Secret
         run: echo "${{ secrets.ENV_FILE }}" > .env
@@ -30,15 +31,26 @@ jobs:
       - name: 🔑 Gerar chave da aplicação
         run: php artisan key:generate --force
 
-      - name: ⚡ Otimizar aplicação Laravel
-        run: php artisan optimize
-
-      - name: 🧱 Compilar assets (caso use Mix/Vite)
+      - name: 🧱 Compilar assets (Vite/Mix)
         run: |
           if [ -f package.json ]; then
             npm install
             npm run build
           fi
+
+      - name: ⚡ Otimizar aplicação Laravel
+        run: |
+          php artisan config:cache
+          php artisan route:cache
+          php artisan view:cache
+
+      - name: 🧹 Limpar arquivos temporários antes do deploy
+        run: |
+          rm -rf storage/framework/cache/data/*
+          rm -rf storage/logs/*
+          rm -rf node_modules
+          rm -rf .git
+          rm -f .env
 
       - name: 📤 Fazer upload para KingHost via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.0
@@ -48,16 +60,14 @@ jobs:
           password: ${{ secrets.KINGHOST_PASSWORD }}
           protocol: ftp
           port: 21
-          local-dir: ./ 
-          server-dir: /www/ 
+          local-dir: ./
+          server-dir: /www/
           dangerous-clean-slate: true
           exclude: |
             **/.git*
             **/.github*
-            **/.env
             node_modules/**
-            storage/framework/cache/data/**
-            storage/logs/**
             tests/**
             README.md
             *.md
+            .env
