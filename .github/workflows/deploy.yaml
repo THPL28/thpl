@@ -43,7 +43,7 @@ jobs:
 
       - name: 📦 Adaptar e limpar estrutura para KingHost
         run: |
-          mkdir laravel_core 
+          mkdir laravel_core
           shopt -s dotglob
           mv * laravel_core/ 2>/dev/null || true
           rm -rf laravel_core/.git
@@ -51,6 +51,7 @@ jobs:
           rm -rf laravel_core/node_modules
           rm -f laravel_core/.env
           mv laravel_core/public/build laravel_core/public/lv_assets || true
+          mv laravel_core/public/images laravel_core/public/lv_imgs || true
           sed -i 's/\/build\//\/lv_assets\//g' laravel_core/public/index.php || true
           rm -rf dist || true
           rm -rf build || true
