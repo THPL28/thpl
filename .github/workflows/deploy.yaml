@@ -44,13 +44,22 @@ jobs:
           php artisan route:cache
           php artisan view:cache
 
-      - name: 🧹 Limpar arquivos temporários antes do deploy
+      - name: 📦 Adaptar e limpar estrutura para KingHost
         run: |
-          rm -rf storage/framework/cache/data/*
-          rm -rf storage/logs/*
-          rm -rf node_modules
-          rm -rf .git
-          rm -f .env
+          mkdir laravel_core 
+          shopt -s dotglob
+          mv * laravel_core/ 2>/dev/null || true
+          rm -rf laravel_core/.git
+          rm -rf laravel_core/.github
+          rm -rf laravel_core/node_modules
+          rm -f laravel_core/.env
+          mv laravel_core/public/* ./
+          rm -rf laravel_core/public
+
+      - name: 🧹 Limpar cache e logs antes do deploy
+        run: |
+          rm -rf laravel_core/storage/framework/cache/data/* || true
+          rm -rf laravel_core/storage/logs/* || true
 
       - name: 📤 Fazer upload para KingHost via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.0
