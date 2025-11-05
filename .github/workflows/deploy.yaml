@@ -2,7 +2,7 @@ name: 🚀 Deploy Laravel to KingHost
 
 on:
   workflow_run:
-    workflows: ["Tests"]     # Nome exato do workflow de testes
+    workflows: ["Tests"]   
     types:
       - completed
 
@@ -25,6 +25,10 @@ jobs:
 
       - name: 📦 Instalar dependências Composer
         run: composer install --no-dev --optimize-autoloader
+
+
+      - name: 📝 Criar arquivo .env a partir do Secret
+        run: echo "${{ secrets.ENV_FILE }}" > .env
 
       - name: 🔑 Gerar chave da aplicação
         run: php artisan key:generate --force

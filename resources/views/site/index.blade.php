@@ -87,7 +87,7 @@
                     ['name'=>'Juliana Mendes','company'=>'FutureWeb','img'=>3],
                     ['name'=>'Rafael Gomes','company'=>'Prime Ventures','img'=>4],
                     ['name'=>'Mariana Costa','company'=>'Lumière Design','img'=>5],
-                    ['name'=>'Felipe Rodrigues','company'=>'EcoMarket','img'=>6],
+                   
                 ];
             @endphp
             @foreach($testimonials as $t)

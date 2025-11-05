@@ -61,6 +61,7 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
             @foreach(range(1,6) as $i)
             <div class="p-6 bg-gray-900 rounded-2xl shadow-lg card-hover">
+                
                 <img src="https://i.pravatar.cc/150?img={{ $i+10 }}" alt="Cliente {{ $i }}" class="w-20 h-20 rounded-full mx-auto mb-4 shadow-md">
                 <h4 class="text-xl font-bold text-gold mb-2">Cliente {{ $i }}</h4>
                 <p class="text-gray-400 text-lg">"A THPL transformou nosso projeto em realidade! O site ficou incrível e o sistema facilitou toda nossa operação diária."</p>
@@ -86,7 +87,7 @@
     </div>
 </section> --}}
 {{-- Time da Empresa --}}
-<section class="py-24 bg-gray-900 fade-in-up">
+{{-- <section class="py-24 bg-gray-900 fade-in-up">
     <div class="container mx-auto px-6 max-w-6xl text-center">
         <h2 class="text-4xl font-bold text-gold mb-12">Nosso Time</h2>
         <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
@@ -99,14 +100,14 @@
             @endforeach
         </div>
     </div>
-</section>
+</section> --}}
 
 {{-- CTA Contato --}}
 <section class="py-20 bg-black text-center border-t border-gold fade-in-up">
     <div class="container mx-auto px-6">
         <h2 class="text-4xl md:text-5xl font-bold text-gold mb-6">Quer trabalhar conosco?</h2>
         <p class="text-gray-400 text-lg mb-10">Seja cliente ou parceiro, entre em contato e vamos criar soluções digitais premium juntos.</p>
-        <a href="{{ url('site/contato') }}" class="bg-gold text-black py-4 px-10 rounded-full font-bold text-xl transition hover:bg-white hover:shadow-lg">
+        <a href="{{ url('site/contato') }}" class="bg-gold text-white py-4 px-10 rounded-full font-bold text-xl transition hover:bg-gray hover:shadow-lg">
             Fale Conosco Agora
         </a>
     </div>
