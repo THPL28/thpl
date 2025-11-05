@@ -23,9 +23,8 @@ jobs:
           extensions: mbstring, bcmath, intl, mysql, xml, curl, zip
           coverage: none
 
-      - name: 📦 Instalar dependências Composer
+      - name: 📦 Instalar dependências do Composer
         run: composer install --no-dev --optimize-autoloader
-
 
       - name: 📝 Criar arquivo .env a partir do Secret
         run: echo "${{ secrets.ENV_FILE }}" > .env
@@ -36,7 +35,7 @@ jobs:
       - name: 🧱 Compilar assets (caso use Mix/Vite)
         run: |
           if [ -f package.json ]; then
-            npm ci
+            npm install
             npm run build
           fi
 
