@@ -50,10 +50,10 @@ jobs:
           rm -rf laravel_core/.github
           rm -rf laravel_core/node_modules
           rm -f laravel_core/.env
-          mv laravel_core/public/build laravel_core/public/dist || true
-          mv laravel_core/public/dist laravel_core/dist || true
-          sed -i 's/..\/..\/..\/public\/build/..\/laravel_core\/dist/g' laravel_core/public/index.php || true
-          sed -i 's/\/build\//\/laravel_core\/dist\//g' laravel_core/public/index.php || true
+          mv laravel_core/public/build laravel_core/public/lv_assets || true
+          sed -i 's/\/build\//\/lv_assets\//g' laravel_core/public/index.php || true
+          rm -rf dist || true
+          rm -rf build || true
           mv laravel_core/public/* ./
           rm -rf laravel_core/public
 
