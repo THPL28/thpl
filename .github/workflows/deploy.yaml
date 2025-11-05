@@ -40,14 +40,14 @@ jobs:
             npm run build
           fi
 
-      - name: 📤 Fazer upload para KingHost via SFTP
+      - name: 📤 Fazer upload para KingHost via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.0
         with:
           server: ${{ secrets.KINGHOST_SERVER }}
           username: ${{ secrets.KINGHOST_USER }}
           password: ${{ secrets.KINGHOST_PASSWORD }}
-          protocol: sftp
-          port: 22
+          protocol: ftp
+          port: 21
           local-dir: ./ 
           server-dir: ${{ secrets.KINGHOST_TARGET_PATH }}
           exclude: |
