@@ -10,9 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     name: 🚀 Deploy para KingHost
 
-    environment:
-      name: KINGHOST_SERVER
-
     steps:
       - name: 📥 Checkout do código
         uses: actions/checkout@v4
@@ -51,11 +48,14 @@ jobs:
           password: ${{ secrets.KINGHOST_PASSWORD }}
           protocol: sftp
           port: 22
-          local-dir: ./
+          local-dir: ./ 
           server-dir: ${{ secrets.KINGHOST_TARGET_PATH }}
           exclude: |
             .git/
             .github/
-            .env
-            vendor/
             node_modules/
+            vendor/
+            storage/framework/cache/data/
+            storage/logs/
+            tests/
+            .env
