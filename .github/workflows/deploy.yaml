@@ -39,10 +39,7 @@ jobs:
           fi
 
       - name: ⚡ Otimizar aplicação Laravel
-        run: |
-          php artisan config:cache
-          php artisan route:cache
-          php artisan view:cache
+        run: php artisan config:cache && php artisan route:cache && php artisan view:cache
 
       - name: 📦 Adaptar e limpar estrutura para KingHost
         run: |
@@ -53,6 +50,8 @@ jobs:
           rm -rf laravel_core/.github
           rm -rf laravel_core/node_modules
           rm -f laravel_core/.env
+          mv laravel_core/public/build laravel_core/public/dist || true
+          sed -i 's/\/build\//\/dist\//g' laravel_core/public/index.php || true
           mv laravel_core/public/* ./
           rm -rf laravel_core/public
 
