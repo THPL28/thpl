@@ -1,16 +1,14 @@
 name: 🚀 Deploy Laravel to KingHost
 
 on:
-  workflow_run:
-    workflows: ["Tests"]   
-    types:
-      - completed
+  push:
+    branches:
+      - master
 
 jobs:
   deploy:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
-    name: Deploy para KingHost
+    name: 🚀 Deploy para KingHost
 
     steps:
       - name: 📥 Checkout do código
@@ -32,6 +30,9 @@ jobs:
       - name: 🔑 Gerar chave da aplicação
         run: php artisan key:generate --force
 
+      - name: ⚡ Otimizar aplicação Laravel
+        run: php artisan optimize
+
       - name: 🧱 Compilar assets (caso use Mix/Vite)
         run: |
           if [ -f package.json ]; then
@@ -40,13 +41,18 @@ jobs:
           fi
 
       - name: 📤 Fazer upload para KingHost via SFTP
-        uses: appleboy/scp-action@v0.1.7
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.0
         with:
-          host: ${{ secrets.KINGHOST_SERVER }}
+          server: ${{ secrets.KINGHOST_SERVER }}
           username: ${{ secrets.KINGHOST_USER }}
           password: ${{ secrets.KINGHOST_PASSWORD }}
+          protocol: sftp
           port: 22
-          source: "./"
-          target: ${{ secrets.KINGHOST_TARGET_PATH }}
-          overwrite: true
-          rm: false
+          local-dir: ./
+          server-dir: ${{ secrets.KINGHOST_TARGET_PATH }}
+          exclude: |
+            .git/
+            .github/
+            .env
+            vendor/
+            node_modules/
