@@ -49,12 +49,11 @@ jobs:
           protocol: ftp
           port: 21
           local-dir: ./ 
-          server-dir: ${{ secrets.KINGHOST_TARGET_PATH }}
+          server-dir: /www/ 
           exclude: |
-            .git/**
-            .github/**
-            .env
-            vendor/**
+            **/.git*
+            **/.github*
+            **/.env
             node_modules/**
             storage/framework/cache/data/**
             storage/logs/**
