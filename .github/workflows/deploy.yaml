@@ -8,67 +8,42 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    name: 🚀 Deploy para KingHost
-
     steps:
-      - name: 📥 Checkout do código
+      - name: 🧩 Checkout do código
         uses: actions/checkout@v4
 
-      - name: ⚙️ Configurar PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
-          extensions: mbstring, bcmath, intl, pdo_mysql, xml, curl, zip
-          tools: composer
-
-      - name: 📦 Instalar dependências do Composer
-        run: composer install --no-dev --prefer-dist --optimize-autoloader
-
-      - name: 📝 Criar arquivo .env a partir do Secret
-        run: echo "${{ secrets.ENV_FILE }}" > .env
-
-      - name: 🔑 Gerar chave da aplicação Laravel
-        run: php artisan key:generate --force
-
-      - name: ⚡ Otimizar aplicação Laravel
-        run: php artisan config:cache && php artisan route:cache && php artisan view:cache
-
-      - name: 🧱 Compilar assets (Vite/Mix)
+      - name: ⚙️ Instalar dependências PHP
         run: |
-          if [ -f package.json ]; then
-            npm install
-            npm run build
-          fi
+          composer install --no-dev --optimize-autoloader
+          php artisan config:cache
+          php artisan route:cache
+          php artisan view:cache
 
-      - name: 📂 Criar estrutura de pastas (corrige erro 550)
+      - name: ⚙️ Instalar dependências Node e compilar
         run: |
-          mkdir -p public/build/assets
-          mkdir -p public/images/projects
-          mkdir -p public/images/icon
+          npm ci
+          npm run build
 
-      - name: 📤 Fazer upload da pasta public/ para KingHost via FTP
+      - name: 🚀 Deploy para KingHost
         uses: SamKirkland/FTP-Deploy-Action@v4.3.0
         with:
-          server: ${{ secrets.KINGHOST_SERVER }}
-          username: ${{ secrets.KINGHOST_USER }}
-          password: ${{ secrets.KINGHOST_PASSWORD }}
-          protocol: ftp
-          port: 21
-          local-dir: ./public/
-          server-dir: /home/thpl/www/
-          dangerous-clean-slate: true
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: public/
+          server-dir: public_html/
+          protocol: ftps
+          log-level: verbose
+          dry-run: false
           exclude: |
             **/.git*
             **/.github*
-            **/.vscode*
-            node_modules/**
-            vendor/**
-            tests/**
-            storage/**
-            bootstrap/**
-            .env
-            README.md
-            **/*.log
-
-      - name: ✅ Confirmar sucesso do deploy
-        run: echo "🎉 Deploy concluído com sucesso para KingHost!"
+            **/node_modules/**
+            **/vendor/**
+            **/storage/**
+            **/tests/**
+            **/resources/**
+            **/database/**
+            **/*.env
+          script: |
+            mkdir build || true
