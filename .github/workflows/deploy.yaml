@@ -38,7 +38,7 @@ jobs:
           php artisan route:cache || true
           php artisan view:cache || true
 
-      - name: 🗄️ Fazer backup remoto antes do deploy
+      - name: 🗄️ Fazer backup remoto antes do deploy (dry-run)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.0
         with:
           server: ${{ secrets.KINGHOST_SERVER }}
@@ -70,6 +70,7 @@ jobs:
             --ftp-create-dirs -Q "RNFR ${{ secrets.KINGHOST_TARGET_PATH }}" \
             -Q "RNTO ${BACKUP_DIR}" \
             ftp://${{ secrets.KINGHOST_SERVER }} || echo "⚠️ Backup simples criado (renomeado)."
+          echo "BACKUP_DIR=$BACKUP_DIR" >> $GITHUB_ENV
 
       - name: 🚀 Fazer deploy para KingHost
         id: deploy
@@ -79,8 +80,8 @@ jobs:
           username: ${{ secrets.KINGHOST_USER }}
           password: ${{ secrets.KINGHOST_PASSWORD }}
           port: 21
-          protocol: ftps
-          security: strict
+          protocol: ftp
+          security: loose
           local-dir: ./public/
           server-dir: ${{ secrets.KINGHOST_TARGET_PATH }}
           log-level: verbose
