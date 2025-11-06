@@ -3,39 +3,37 @@ name: 🚀 Deploy Laravel to KingHost
 on:
   push:
     branches:
-      - master 
+      - master
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     name: 🚀 Deploy para KingHost
 
+    environment:
+      name: DEPLOY
+
     steps:
-      
       - name: 📥 Checkout do código
         uses: actions/checkout@v4
 
-      
       - name: ⚙️ Configurar PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
           extensions: mbstring, bcmath, intl, pdo_mysql, xml, curl, zip
+          coverage: none
           tools: composer
 
-      
       - name: 📦 Instalar dependências do Composer
         run: composer install --no-dev --prefer-dist --optimize-autoloader
 
-      
       - name: 📝 Criar arquivo .env a partir do Secret
         run: echo "${{ secrets.ENV_FILE }}" > .env
 
-      
       - name: 🔑 Gerar chave da aplicação
         run: php artisan key:generate --force
 
-      
       - name: 🧱 Compilar assets (Vite/Mix)
         run: |
           if [ -f package.json ]; then
@@ -43,27 +41,31 @@ jobs:
             npm run build
           fi
 
-     
       - name: ⚡ Otimizar aplicação Laravel
         run: php artisan config:cache && php artisan route:cache && php artisan view:cache
 
-     
-      - name: 📤 Fazer upload para KingHost via FTP
+      - name: 🧹 Limpar caches temporários
+        run: |
+          rm -rf storage/framework/cache/data/*
+          rm -rf storage/logs/*
+
+      - name: 📤 Fazer upload completo para KingHost via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.0
         with:
-          server: ${{ secrets.KINGHOST_SERVER }}      
-          username: ${{ secrets.KINGHOST_USER }}      
-          password: ${{ secrets.KINGHOST_PASSWORD }}  
+          server: ${{ secrets.KINGHOST_SERVER }}
+          username: ${{ secrets.KINGHOST_USER }}
+          password: ${{ secrets.KINGHOST_PASSWORD }}
           protocol: ftp
           port: 21
-          local-dir: ./                               
-          server-dir: /home/thpl/www/                 
+          local-dir: ./
+          server-dir: /home/thpl/www/
           dangerous-clean-slate: true
           exclude: |
             **/.git*
             **/.github*
-            node_modules/**
-            tests/**
-            README.md
-            *.md
-            .env
+            **/node_modules/**
+            **/tests/**
+            **/storage/logs/**
+            **/storage/framework/cache/**
+            **/*.md
+            **/.env
