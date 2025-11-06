@@ -3,7 +3,7 @@ name: 🚀 Deploy Laravel to KingHost
 on:
   push:
     branches:
-      - master
+      - master 
 
 jobs:
   deploy:
@@ -11,26 +11,31 @@ jobs:
     name: 🚀 Deploy para KingHost
 
     steps:
+      
       - name: 📥 Checkout do código
         uses: actions/checkout@v4
 
+      
       - name: ⚙️ Configurar PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
           extensions: mbstring, bcmath, intl, pdo_mysql, xml, curl, zip
-          coverage: none
           tools: composer
 
+      
       - name: 📦 Instalar dependências do Composer
         run: composer install --no-dev --prefer-dist --optimize-autoloader
 
+      
       - name: 📝 Criar arquivo .env a partir do Secret
         run: echo "${{ secrets.ENV_FILE }}" > .env
 
+      
       - name: 🔑 Gerar chave da aplicação
         run: php artisan key:generate --force
 
+      
       - name: 🧱 Compilar assets (Vite/Mix)
         run: |
           if [ -f package.json ]; then
@@ -38,41 +43,21 @@ jobs:
             npm run build
           fi
 
+     
       - name: ⚡ Otimizar aplicação Laravel
         run: php artisan config:cache && php artisan route:cache && php artisan view:cache
 
-      - name: 📦 Adaptar e limpar estrutura para KingHost
-        run: |
-          mkdir laravel_core
-          shopt -s dotglob
-          mv * laravel_core/ 2>/dev/null || true
-          rm -rf laravel_core/.git
-          rm -rf laravel_core/.github
-          rm -rf laravel_core/node_modules
-          rm -f laravel_core/.env
-          mv laravel_core/public/build laravel_core/public/lv_assets || true
-          mv laravel_core/public/images laravel_core/public/lv_imgs || true
-          sed -i 's/\/build\//\/lv_assets\//g' laravel_core/public/index.php || true
-          rm -rf dist || true
-          rm -rf build || true
-          mv laravel_core/public/* ./
-          rm -rf laravel_core/public
-
-      - name: 🧹 Limpar cache e logs antes do deploy
-        run: |
-          rm -rf laravel_core/storage/framework/cache/data/* || true
-          rm -rf laravel_core/storage/logs/* || true
-
+     
       - name: 📤 Fazer upload para KingHost via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.0
         with:
-          server: ${{ secrets.KINGHOST_SERVER }}
-          username: ${{ secrets.KINGHOST_USER }}
-          password: ${{ secrets.KINGHOST_PASSWORD }}
+          server: ${{ secrets.KINGHOST_SERVER }}      
+          username: ${{ secrets.KINGHOST_USER }}      
+          password: ${{ secrets.KINGHOST_PASSWORD }}  
           protocol: ftp
           port: 21
-          local-dir: ./
-          server-dir: /www/
+          local-dir: ./                               
+          server-dir: /home/thpl/www/                 
           dangerous-clean-slate: true
           exclude: |
             **/.git*
