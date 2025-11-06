@@ -8,6 +8,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: 🧩 Checkout do código
         uses: actions/checkout@v4
@@ -23,16 +24,18 @@ jobs:
         run: |
           npm ci
           npm run build
+          mkdir -p public/build  # garante que a pasta build exista
 
       - name: 🚀 Deploy para KingHost
         uses: SamKirkland/FTP-Deploy-Action@v4.3.0
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: public/
-          server-dir: public_html/
+          server: ${{ secrets.KINGHOST_SERVER }}
+          username: ${{ secrets.KINGHOST_USER }}
+          password: ${{ secrets.KINGHOST_PASSWORD }}
           protocol: ftps
+          port: 21
+          local-dir: public/
+          server-dir: ${{ secrets.KINGHOST_TARGET_PATH || 'public_html/' }}
           log-level: verbose
           dry-run: false
           exclude: |
@@ -45,5 +48,3 @@ jobs:
             **/resources/**
             **/database/**
             **/*.env
-          script: |
-            mkdir build || true
