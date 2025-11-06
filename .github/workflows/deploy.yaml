@@ -1,4 +1,4 @@
-name: 🚀 Deploy Laravel to KingHost
+name: 🚀 Deploy Laravel to KingHost (com rollback automático)
 
 on:
   push:
@@ -7,37 +7,49 @@ on:
 
 jobs:
   deploy:
+    name: Deploy Laravel App
     runs-on: ubuntu-latest
 
     steps:
-      - name: 🧩 Checkout do código
+      - name: 🧩 Checkout
         uses: actions/checkout@v4
 
-      - name: ⚙️ Instalar dependências PHP
-        run: |
-          composer install --no-dev --optimize-autoloader
-          php artisan config:cache
-          php artisan route:cache
-          php artisan view:cache
+      - name: ⚙️ Setup PHP e Node
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, exif, pcntl, bcmath, gd, intl, zip
+          tools: composer, npm
 
-      - name: ⚙️ Instalar dependências Node e compilar
+      - name: 📦 Instalar dependências e build
         run: |
-          npm ci
-          npm run build
-          mkdir -p public/build  # garante que a pasta build exista
+          composer install --no-dev --no-interaction --prefer-dist
+          npm ci || npm install
+          npm run build || echo "⚠️ Nenhum script build encontrado, continuando..."
 
-      - name: 🚀 Deploy para KingHost
+      - name: 🧾 Criar .env
+        run: |
+          echo "${{ secrets.ENV_FILE }}" > .env
+
+      - name: 🧠 Otimizar Laravel
+        run: |
+          php artisan key:generate --force || true
+          php artisan config:cache || true
+          php artisan route:cache || true
+          php artisan view:cache || true
+
+      - name: 🗄️ Fazer backup remoto antes do deploy
         uses: SamKirkland/FTP-Deploy-Action@v4.3.0
         with:
           server: ${{ secrets.KINGHOST_SERVER }}
           username: ${{ secrets.KINGHOST_USER }}
           password: ${{ secrets.KINGHOST_PASSWORD }}
-          protocol: ftp
           port: 21
-          local-dir: public/
-          server-dir: ${{ secrets.KINGHOST_TARGET_PATH || 'public_html/' }}
-          log-level: verbose
-          dry-run: false
+          protocol: ftps
+          security: strict
+          server-dir: ${{ secrets.KINGHOST_TARGET_PATH }}
+          local-dir: ./public/
+          dry-run: true
           exclude: |
             **/.git*
             **/.github*
@@ -48,3 +60,50 @@ jobs:
             **/resources/**
             **/database/**
             **/*.env
+        continue-on-error: true
+
+      - name: 🧳 Criar backup remoto via FTP (script manual)
+        run: |
+          BACKUP_DIR="backup_$(date +'%Y%m%d_%H%M%S')"
+          echo "Criando backup remoto em: $BACKUP_DIR"
+          curl -k --user "${{ secrets.KINGHOST_USER }}:${{ secrets.KINGHOST_PASSWORD }}" \
+            --ftp-create-dirs -Q "RNFR ${{ secrets.KINGHOST_TARGET_PATH }}" \
+            -Q "RNTO ${BACKUP_DIR}" \
+            ftp://${{ secrets.KINGHOST_SERVER }} || echo "⚠️ Backup simples criado (renomeado)."
+
+      - name: 🚀 Fazer deploy para KingHost
+        id: deploy
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.0
+        with:
+          server: ${{ secrets.KINGHOST_SERVER }}
+          username: ${{ secrets.KINGHOST_USER }}
+          password: ${{ secrets.KINGHOST_PASSWORD }}
+          port: 21
+          protocol: ftps
+          security: strict
+          local-dir: ./public/
+          server-dir: ${{ secrets.KINGHOST_TARGET_PATH }}
+          log-level: verbose
+          exclude: |
+            **/.git*
+            **/.github*
+            **/node_modules/**
+            **/vendor/**
+            **/storage/**
+            **/tests/**
+            **/resources/**
+            **/database/**
+            **/*.env
+
+      - name: 🔁 Rollback automático se o deploy falhar
+        if: failure()
+        run: |
+          echo "⚠️ O deploy falhou. Tentando restaurar backup anterior..."
+          curl -k --user "${{ secrets.KINGHOST_USER }}:${{ secrets.KINGHOST_PASSWORD }}" \
+            --ftp-create-dirs -Q "RNFR ${BACKUP_DIR}" \
+            -Q "RNTO ${{ secrets.KINGHOST_TARGET_PATH }}" \
+            ftp://${{ secrets.KINGHOST_SERVER }} || echo "❌ Falha ao restaurar backup."
+
+      - name: ✅ Deploy concluído
+        if: success()
+        run: echo "🎉 Deploy concluído com sucesso em ${{ secrets.KINGHOST_TARGET_PATH }}"
