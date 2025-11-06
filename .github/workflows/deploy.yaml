@@ -64,11 +64,14 @@ jobs:
           dangerous-clean-slate: true
           exclude: |
             **/.git*
+            **/.git*/**
             **/.github*
-            **/node_modules/**
-            **/tests/**
-            **/storage/logs/**
-            **/storage/framework/cache/**
-            **/*.md
-            **/.env
-            **/vendor/bin/**
+            **/.github*/**
+            node_modules/**
+            vendor/**
+            storage/**
+            tests/**
+            README.md
+            *.md
+            .env
+
