@@ -39,7 +39,7 @@ jobs:
           protocol: ftp
           security: loose
           local-dir: ./deploy_package/www/
-          server-dir: www/
+          server-dir: ${{ secrets.KINGHOST_TARGET_PATH }}
           exclude: |
             **/.git*
             **/.github*
