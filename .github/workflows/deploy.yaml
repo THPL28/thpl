@@ -40,13 +40,13 @@ jobs:
             npm run build
           fi
 
-      - name: 📂 Criar estrutura de pastas manualmente (corrige erro 550)
+      - name: 🧩 Garantir estrutura mínima antes do upload
         run: |
           mkdir -p public/build/assets
           mkdir -p public/images/projects
           mkdir -p public/images/icon
 
-      - name: 📤 Fazer upload da pasta public/ para KingHost via FTP
+      - name: 📤 Fazer upload completo para KingHost via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.0
         with:
           server: ${{ secrets.KINGHOST_SERVER }}
@@ -54,7 +54,7 @@ jobs:
           password: ${{ secrets.KINGHOST_PASSWORD }}
           protocol: ftp
           port: 21
-          local-dir: ./public/
+          local-dir: ./
           server-dir: /home/thpl/www/
           dangerous-clean-slate: true
           exclude: |
@@ -64,6 +64,8 @@ jobs:
             node_modules/**
             vendor/**
             tests/**
+            storage/**
+            bootstrap/**
             .env
             README.md
             **/*.log
