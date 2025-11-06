@@ -1,4 +1,4 @@
-name: 🚀 Deploy Laravel to KingHost (com rollback automático)
+name: 🚀 Deploy Laravel to KingHost (simples)
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   deploy:
-    name: Deploy Laravel App
+    name: Deploy Laravel App (KingHost)
     runs-on: ubuntu-latest
 
     steps:
@@ -38,7 +38,15 @@ jobs:
           php artisan route:cache || true
           php artisan view:cache || true
 
-      - name: 🗄️ Fazer backup remoto antes do deploy (dry-run)
+      - name: 📁 Preparar estrutura para deploy
+        run: |
+          mkdir deploy_package
+          rsync -av --exclude-from=.gitignore ./ ./deploy_package/
+          mkdir -p deploy_package/www
+          cp -r public/* deploy_package/www/
+          echo "✅ Estrutura pronta para deploy no /www da KingHost"
+
+      - name: 🚀 Enviar para servidor FTP KingHost
         uses: SamKirkland/FTP-Deploy-Action@v4.3.0
         with:
           server: ${{ secrets.KINGHOST_SERVER }}
@@ -47,64 +55,15 @@ jobs:
           port: 21
           protocol: ftp
           security: loose
+          local-dir: ./deploy_package/www
           server-dir: ${{ secrets.KINGHOST_TARGET_PATH }}
-          local-dir: ./public/
-          dry-run: true
           exclude: |
             **/.git*
             **/.github*
             **/node_modules/**
-            **/vendor/**
             **/storage/**
             **/tests/**
-            **/resources/**
-            **/database/**
             **/*.env
-        continue-on-error: true
-
-      - name: 🧳 Criar backup remoto via FTP (script manual)
-        run: |
-          BACKUP_DIR="backup_$(date +'%Y%m%d_%H%M%S')"
-          echo "Criando backup remoto em: $BACKUP_DIR"
-          curl -k --user "${{ secrets.KINGHOST_USER }}:${{ secrets.KINGHOST_PASSWORD }}" \
-            --ftp-create-dirs -Q "RNFR ${{ secrets.KINGHOST_TARGET_PATH }}" \
-            -Q "RNTO ${BACKUP_DIR}" \
-            ftp://${{ secrets.KINGHOST_SERVER }} || echo "⚠️ Backup simples criado (renomeado)."
-          echo "BACKUP_DIR=$BACKUP_DIR" >> $GITHUB_ENV
-
-      - name: 🚀 Fazer deploy para KingHost
-        id: deploy
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.0
-        with:
-          server: ${{ secrets.KINGHOST_SERVER }}
-          username: ${{ secrets.KINGHOST_USER }}
-          password: ${{ secrets.KINGHOST_PASSWORD }}
-          port: 21
-          protocol: ftp
-          security: loose
-          local-dir: ./public/
-          server-dir: ${{ secrets.KINGHOST_TARGET_PATH }}
-          log-level: verbose
-          exclude: |
-            **/.git*
-            **/.github*
-            **/node_modules/**
-            **/vendor/**
-            **/storage/**
-            **/tests/**
-            **/resources/**
-            **/database/**
-            **/*.env
-
-      - name: 🔁 Rollback automático se o deploy falhar
-        if: failure()
-        run: |
-          echo "⚠️ O deploy falhou. Tentando restaurar backup anterior..."
-          curl -k --user "${{ secrets.KINGHOST_USER }}:${{ secrets.KINGHOST_PASSWORD }}" \
-            --ftp-create-dirs -Q "RNFR ${BACKUP_DIR}" \
-            -Q "RNTO ${{ secrets.KINGHOST_TARGET_PATH }}" \
-            ftp://${{ secrets.KINGHOST_SERVER }} || echo "❌ Falha ao restaurar backup."
 
       - name: ✅ Deploy concluído
-        if: success()
-        run: echo "🎉 Deploy concluído com sucesso em ${{ secrets.KINGHOST_TARGET_PATH }}"
+        run: echo "🎉 Deploy simples concluído com sucesso em ${{ secrets.KINGHOST_TARGET_PATH }}"
