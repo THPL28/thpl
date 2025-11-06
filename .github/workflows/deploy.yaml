@@ -1,4 +1,4 @@
-name: 🚀 Deploy Laravel to KingHost (simples)
+name: 🚀 Deploy Laravel App (KingHost)
 
 on:
   push:
@@ -7,46 +7,29 @@ on:
 
 jobs:
   deploy:
-    name: Deploy Laravel App (KingHost)
     runs-on: ubuntu-latest
 
     steps:
-      - name: 🧩 Checkout
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: ⚙️ Setup PHP e Node
+      - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
-          extensions: mbstring, exif, pcntl, bcmath, gd, intl, zip
-          tools: composer, npm
+          php-version: 8.2
+          extensions: mbstring, intl, bcmath, gd, pdo_mysql
+          coverage: none
 
-      - name: 📦 Instalar dependências e build
-        run: |
-          composer install --no-dev --no-interaction --prefer-dist
-          npm ci || npm install
-          npm run build || echo "⚠️ Nenhum script build encontrado, continuando..."
+      - name: Instalar dependências
+        run: composer install --no-dev --optimize-autoloader
 
-      - name: 🧾 Criar .env
+      - name: Preparar pacote de deploy
         run: |
-          echo "${{ secrets.ENV_FILE }}" > .env
-
-      - name: 🧠 Otimizar Laravel
-        run: |
-          php artisan key:generate --force || true
-          php artisan config:cache || true
-          php artisan route:cache || true
-          php artisan view:cache || true
-
-      - name: 📁 Preparar estrutura para deploy
-        run: |
-          mkdir deploy_package
-          rsync -av --exclude-from=.gitignore ./ ./deploy_package/
           mkdir -p deploy_package/www
-          cp -r public/* deploy_package/www/
-          echo "✅ Estrutura pronta para deploy no /www da KingHost"
+          rsync -av --exclude='.git*' --exclude='node_modules' --exclude='tests' --exclude='storage' --exclude='.github' --exclude='.env' ./ deploy_package/www/
+          echo "${{ secrets.ENV_FILE }}" > deploy_package/www/.env
 
-      - name: 🚀 Enviar para servidor FTP KingHost
+      - name: Enviar para servidor FTP KingHost
         uses: SamKirkland/FTP-Deploy-Action@v4.3.0
         with:
           server: ${{ secrets.KINGHOST_SERVER }}
@@ -55,7 +38,7 @@ jobs:
           port: 21
           protocol: ftp
           security: loose
-          local-dir: ./deploy_package/www
+          local-dir: ./deploy_package/www/
           server-dir: ${{ secrets.KINGHOST_TARGET_PATH }}
           exclude: |
             **/.git*
@@ -64,6 +47,3 @@ jobs:
             **/storage/**
             **/tests/**
             **/*.env
-
-      - name: ✅ Deploy concluído
-        run: echo "🎉 Deploy simples concluído com sucesso em ${{ secrets.KINGHOST_TARGET_PATH }}"
