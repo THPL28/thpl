@@ -9,7 +9,6 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     name: 🚀 Deploy para KingHost
-
     environment:
       name: DEPLOY
 
@@ -34,29 +33,32 @@ jobs:
       - name: 🔑 Gerar chave da aplicação
         run: php artisan key:generate --force
 
-      - name: 🧱 Compilar assets (Vite/Mix)
+      - name: 🧱 Compilar assets com Vite
         run: |
           if [ -f package.json ]; then
-            npm install
+            npm ci
             npm run build
           fi
 
       - name: ⚡ Otimizar aplicação Laravel
-        run: php artisan config:cache && php artisan route:cache && php artisan view:cache
+        run: |
+          php artisan config:cache
+          php artisan route:cache
+          php artisan view:cache
 
-      - name: 🧹 Limpar caches temporários
+      - name: 🧹 Limpar caches e logs antes do deploy
         run: |
           rm -rf storage/framework/cache/data/*
           rm -rf storage/logs/*
 
-      - name: 📤 Fazer upload completo para KingHost via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.0
+      - name: 📤 Deploy via Penguibird FTP-Deploy-Action
+        uses: Penguibird/FTP-Deploy-Action@4.2.1
         with:
           server: ${{ secrets.KINGHOST_SERVER }}
           username: ${{ secrets.KINGHOST_USER }}
           password: ${{ secrets.KINGHOST_PASSWORD }}
-          protocol: ftp
           port: 21
+          protocol: ftp
           local-dir: ./
           server-dir: /home/thpl/www/
           dangerous-clean-slate: true
@@ -69,3 +71,4 @@ jobs:
             **/storage/framework/cache/**
             **/*.md
             **/.env
+            **/vendor/bin/**
