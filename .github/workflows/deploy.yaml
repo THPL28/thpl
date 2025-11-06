@@ -7,29 +7,30 @@ on:
 
 jobs:
   deploy:
+    name: 📦 Enviar aplicação para KingHost
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: 🧩 Checkout do código
         uses: actions/checkout@v4
 
-      - name: Setup PHP
+      - name: 🧰 Configurar PHP 8.2
         uses: shivammathur/setup-php@v2
         with:
           php-version: 8.2
           extensions: mbstring, intl, bcmath, gd, pdo_mysql
           coverage: none
 
-      - name: Instalar dependências
+      - name: 📦 Instalar dependências (sem dev)
         run: composer install --no-dev --optimize-autoloader
 
-      - name: Preparar pacote de deploy
+      - name: 🧱 Preparar pacote de deploy
         run: |
           mkdir -p deploy_package/www
           rsync -av --exclude='.git*' --exclude='node_modules' --exclude='tests' --exclude='storage' --exclude='.github' --exclude='.env' ./ deploy_package/www/
           echo "${{ secrets.ENV_FILE }}" > deploy_package/www/.env
 
-      - name: Enviar para servidor FTP KingHost
+      - name: 🚀 Enviar via FTP para KingHost
         uses: SamKirkland/FTP-Deploy-Action@v4.3.0
         with:
           server: ${{ secrets.KINGHOST_SERVER }}
