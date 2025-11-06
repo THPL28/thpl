@@ -28,10 +28,10 @@ jobs:
           # 1. Cria o diretório local para o pacote de deploy
           mkdir -p deploy_package/www
           
-          # 2. Copia os arquivos do projeto para o pacote, excluindo arquivos sensíveis ou desnecessários.
+          # 2. Copia os arquivos do projeto
           rsync -av --exclude='.git*' --exclude='node_modules' --exclude='tests' --exclude='storage' --exclude='.github' --exclude='.env' ./ deploy_package/www/
           
-          # 3. Adiciona o arquivo .env usando a secret.
+          # 3. Adiciona o arquivo .env
           echo "${{ secrets.ENV_FILE }}" > deploy_package/www/.env
 
       - name: Enviar para servidor FTP KingHost
@@ -44,7 +44,7 @@ jobs:
           protocol: ftp
           security: loose
           local-dir: ./deploy_package/www/
-          server-dir: public_html/ 
+          server-dir: htdocs/ 
           exclude: |
             **/.git*
             **/.github*
