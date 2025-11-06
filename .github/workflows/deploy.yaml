@@ -9,8 +9,6 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     name: 🚀 Deploy para KingHost
-    environment:
-      name: DEPLOY
 
     steps:
       - name: 📥 Checkout do código
@@ -21,7 +19,6 @@ jobs:
         with:
           php-version: '8.2'
           extensions: mbstring, bcmath, intl, pdo_mysql, xml, curl, zip
-          coverage: none
           tools: composer
 
       - name: 📦 Instalar dependências do Composer
@@ -30,48 +27,37 @@ jobs:
       - name: 📝 Criar arquivo .env a partir do Secret
         run: echo "${{ secrets.ENV_FILE }}" > .env
 
-      - name: 🔑 Gerar chave da aplicação
+      - name: 🔑 Gerar chave da aplicação Laravel
         run: php artisan key:generate --force
 
-      - name: 🧱 Compilar assets com Vite
+      - name: ⚡ Otimizar aplicação Laravel
+        run: php artisan config:cache && php artisan route:cache && php artisan view:cache
+
+      - name: 🧱 Compilar assets (Vite/Mix)
         run: |
           if [ -f package.json ]; then
-            npm ci
+            npm install
             npm run build
           fi
 
-      - name: ⚡ Otimizar aplicação Laravel
-        run: |
-          php artisan config:cache
-          php artisan route:cache
-          php artisan view:cache
-
-      - name: 🧹 Limpar caches e logs antes do deploy
-        run: |
-          rm -rf storage/framework/cache/data/*
-          rm -rf storage/logs/*
-
-      - name: 📤 Deploy via Penguibird FTP-Deploy-Action
-        uses: Penguibird/FTP-Deploy-Action@4.2.1
+      - name: 📤 Fazer upload da pasta public/ para KingHost via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.0
         with:
           server: ${{ secrets.KINGHOST_SERVER }}
           username: ${{ secrets.KINGHOST_USER }}
           password: ${{ secrets.KINGHOST_PASSWORD }}
-          port: 21
           protocol: ftp
-          local-dir: ./
+          port: 21
+          local-dir: ./public/
           server-dir: /home/thpl/www/
           dangerous-clean-slate: true
           exclude: |
             **/.git*
-            **/.git*/**
             **/.github*
-            **/.github*/**
+            **/.vscode*
             node_modules/**
             vendor/**
-            storage/**
             tests/**
-            README.md
-            *.md
             .env
-
+            README.md
+            **/*.log
