@@ -40,6 +40,12 @@ jobs:
             npm run build
           fi
 
+      - name: 📂 Criar estrutura de pastas manualmente (corrige erro 550)
+        run: |
+          mkdir -p public/build/assets
+          mkdir -p public/images/projects
+          mkdir -p public/images/icon
+
       - name: 📤 Fazer upload da pasta public/ para KingHost via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.0
         with:
@@ -61,3 +67,6 @@ jobs:
             .env
             README.md
             **/*.log
+
+      - name: ✅ Confirmar sucesso do deploy
+        run: echo "🎉 Deploy concluído com sucesso para KingHost!"
