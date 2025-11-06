@@ -45,8 +45,8 @@ jobs:
           username: ${{ secrets.KINGHOST_USER }}
           password: ${{ secrets.KINGHOST_PASSWORD }}
           port: 21
-          protocol: ftps
-          security: strict
+          protocol: ftp
+          security: loose
           server-dir: ${{ secrets.KINGHOST_TARGET_PATH }}
           local-dir: ./public/
           dry-run: true
