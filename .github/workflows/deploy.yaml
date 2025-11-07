@@ -1,27 +1,72 @@
-name: 🧪 Teste Deploy FTP (KingHost)
+name: 🚀 Deploy Laravel to KingHost
 
 on:
-  workflow_dispatch:  # Permite rodar manualmente pelo GitHub Actions
+  push:
+    branches:
+      - master
 
 jobs:
-  test-deploy:
+  deploy:
     runs-on: ubuntu-latest
+    name: 🚀 Deploy para KingHost
 
     steps:
-      - name: Criar arquivo de teste
-        run: |
-          mkdir -p deploy_test
-          echo "Deploy automático funcionando em $(date)" > deploy_test/teste_upload.txt
+      - name: 📥 Checkout do código
+        uses: actions/checkout@v4
 
-      - name: Enviar arquivo para servidor FTP KingHost
+      - name: ⚙️ Configurar PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, bcmath, intl, pdo_mysql, xml, curl, zip
+          tools: composer
+
+      - name: 📦 Instalar dependências do Composer
+        run: composer install --no-dev --prefer-dist --optimize-autoloader
+
+      - name: 📝 Criar arquivo .env a partir do Secret
+        run: echo "${{ secrets.ENV_FILE }}" > .env
+
+      - name: 🔑 Gerar chave da aplicação Laravel
+        run: php artisan key:generate --force
+
+      - name: ⚡ Otimizar aplicação Laravel
+        run: php artisan config:cache && php artisan route:cache && php artisan view:cache
+
+      - name: 🧱 Compilar assets (Vite/Mix)
+        run: |
+          if [ -f package.json ]; then
+            npm install
+            npm run build
+          fi
+
+      - name: 📂 Criar estrutura de pastas manualmente (corrige erro 550)
+        run: |
+          mkdir -p public/build/assets
+          mkdir -p public/images/projects
+          mkdir -p public/images/icon
+
+      - name: 📤 Fazer upload da pasta public/ para KingHost via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.0
         with:
           server: ${{ secrets.KINGHOST_SERVER }}
           username: ${{ secrets.KINGHOST_USER }}
           password: ${{ secrets.KINGHOST_PASSWORD }}
-          port: 21
           protocol: ftp
-          security: loose
-          local-dir: ./deploy_test/
-          server-dir: /www/
-          state-name: none
+          port: 21
+          local-dir: ./public/
+          server-dir: /home/thpl/www/
+          dangerous-clean-slate: true
+          exclude: |
+            **/.git*
+            **/.github*
+            **/.vscode*
+            node_modules/**
+            vendor/**
+            tests/**
+            .env
+            README.md
+            **/*.log
+
+      - name: ✅ Confirmar sucesso do deploy
+        run: echo "🎉 Deploy concluído com sucesso para KingHost!"
