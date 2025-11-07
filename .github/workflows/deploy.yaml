@@ -1,39 +1,35 @@
-name: 🧪 Teste Deploy FTP (KingHost)
+name: 🚀 Deploy Laravel App (KingHost)
 
 on:
-  workflow_dispatch:  # Permite rodar manualmente pelo GitHub Actions
+  push:
+    branches:
+      - master
 
 jobs:
-  test-deploy:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Criar arquivo de teste
-        run: |
-          mkdir -p deploy_test
-          echo "Deploy automático funcionando em $(date)" > deploy_test/teste_upload.txt
+      - name: 📦 Checkout
+        uses: actions/checkout@v4
 
-     
-      - name: Enviar arquivo via FTPS (modo passivo seguro)
-        id: ftps_upload
-        continue-on-error: true
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.0
+      - name: ⚙️ Setup PHP
+        uses: shivammathur/setup-php@v2
         with:
-          server: ${{ secrets.KINGHOST_SERVER }}
-          username: ${{ secrets.KINGHOST_USER }}
-          password: ${{ secrets.KINGHOST_PASSWORD }}
-          port: 21
-          protocol: ftps
-          security: strict
-          local-dir: ./deploy_test/
-          server-dir: /www/
-          timeout: 120
-          passive: true
-          state-name: none
+          php-version: 8.2
+          extensions: mbstring, intl, bcmath, gd, pdo_mysql
+          coverage: none
 
-      
-      - name: Fallback para FTP simples (modo passivo)
-        if: steps.ftps_upload.outcome != 'success'
+      - name: 🧰 Instalar dependências
+        run: composer install --no-dev --optimize-autoloader
+
+      - name: 🧱 Preparar pacote de deploy
+        run: |
+          mkdir -p deploy_package
+          rsync -av --exclude='.git*' --exclude='node_modules' --exclude='tests' --exclude='.github' --exclude='.env' ./ deploy_package/
+          echo "${{ secrets.ENV_PRODUCTION }}" > deploy_package/.env
+
+      - name: 🚀 Enviar para servidor FTP KingHost
         uses: SamKirkland/FTP-Deploy-Action@v4.3.0
         with:
           server: ${{ secrets.KINGHOST_SERVER }}
@@ -42,8 +38,13 @@ jobs:
           port: 21
           protocol: ftp
           security: loose
-          local-dir: ./deploy_test/
+          local-dir: ./deploy_package/
           server-dir: /www/
-          timeout: 120
-          passive: true
-          state-name: none
+          dangerous-clean-slate: false
+          exclude: |
+            **/.git*
+            **/tests/**
+            **/storage/**
+            **/node_modules/**
+            **/.github/**
+            **/*.env
