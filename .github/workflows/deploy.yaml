@@ -1,26 +1,39 @@
-name: 🧪 Teste Deploy FTP KingHost
+name: 🧪 Teste Deploy FTP (KingHost)
 
 on:
-  workflow_dispatch:
-  push:
-    branches:
-      - master
+  workflow_dispatch:  # Permite rodar manualmente pelo GitHub Actions
 
 jobs:
   test-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout código
-        uses: actions/checkout@v4
-
       - name: Criar arquivo de teste
         run: |
-          echo "Deploy de teste realizado com sucesso em $(date)" > teste_upload.txt
           mkdir -p deploy_test
-          mv teste_upload.txt deploy_test/
+          echo "Deploy automático funcionando em $(date)" > deploy_test/teste_upload.txt
 
-      - name: Enviar arquivo de teste via FTP
+     
+      - name: Enviar arquivo via FTPS (modo passivo seguro)
+        id: ftps_upload
+        continue-on-error: true
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.0
+        with:
+          server: ${{ secrets.KINGHOST_SERVER }}
+          username: ${{ secrets.KINGHOST_USER }}
+          password: ${{ secrets.KINGHOST_PASSWORD }}
+          port: 21
+          protocol: ftps
+          security: strict
+          local-dir: ./deploy_test/
+          server-dir: /www/
+          timeout: 120
+          passive: true
+          state-name: none
+
+      
+      - name: Fallback para FTP simples (modo passivo)
+        if: steps.ftps_upload.outcome != 'success'
         uses: SamKirkland/FTP-Deploy-Action@v4.3.0
         with:
           server: ${{ secrets.KINGHOST_SERVER }}
@@ -31,8 +44,6 @@ jobs:
           security: loose
           local-dir: ./deploy_test/
           server-dir: /www/
-          dangerous-clean-slate: false
+          timeout: 120
+          passive: true
           state-name: none
-
-      - name: ✅ Confirmar sucesso
-        run: echo "🧪 Teste de deploy concluído com sucesso! Verifique em https://www.thpl.com.br/teste_upload.txt"
