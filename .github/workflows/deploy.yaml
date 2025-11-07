@@ -28,7 +28,7 @@ jobs:
           # 1. Cria o diretório local para o pacote de deploy
           mkdir -p deploy_package/www
           
-          
+        
           rsync -av --exclude='.git*' --exclude='node_modules' --exclude='tests' --exclude='storage' --exclude='.github' --exclude='.env' ./ deploy_package/www/
           
           # 3. Adiciona o arquivo .env
