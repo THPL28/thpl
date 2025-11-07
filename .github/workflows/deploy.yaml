@@ -28,7 +28,7 @@ jobs:
           # 1. Cria o diretório local para o pacote de deploy
           mkdir -p deploy_package/www
           
-          # 2. Copia os arquivos do projeto
+          # 2. Copia os arquivos do projeto (sem os que não precisam ir pro servidor)
           rsync -av --exclude='.git*' --exclude='node_modules' --exclude='tests' --exclude='storage' --exclude='.github' --exclude='.env' ./ deploy_package/www/
           
           # 3. Adiciona o arquivo .env
@@ -44,7 +44,8 @@ jobs:
           protocol: ftp
           security: loose
           local-dir: ./deploy_package/www/
-          server-dir: htdocs/ 
+          server-dir: www/
+          dangerous-clean-slate: true 
           exclude: |
             **/.git*
             **/.github*
