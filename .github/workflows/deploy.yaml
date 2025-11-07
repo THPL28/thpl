@@ -1,35 +1,19 @@
-name: 🚀 Deploy Laravel App (KingHost)
+name: 🧪 Teste Deploy FTP (KingHost)
 
 on:
-  push:
-    branches:
-      - master
+  workflow_dispatch:  # Permite rodar manualmente pelo GitHub Actions
 
 jobs:
-  deploy:
+  test-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: 8.2
-          extensions: mbstring, intl, bcmath, gd, pdo_mysql
-          coverage: none
-
-      - name: Instalar dependências
-        run: composer install --no-dev --optimize-autoloader
-
-      - name: Preparar pacote de deploy
+      - name: Criar arquivo de teste
         run: |
-          mkdir -p deploy_package
-          rsync -av --exclude='.git*' --exclude='node_modules' --exclude='tests' --exclude='.github' --exclude='.env' ./ deploy_package/
-          echo "${{ secrets.ENV_FILE }}" > deploy_package/.env
+          mkdir -p deploy_test
+          echo "Deploy automático funcionando em $(date)" > deploy_test/teste_upload.txt
 
-      - name: Enviar para servidor FTP KingHost
+      - name: Enviar arquivo para servidor FTP KingHost
         uses: SamKirkland/FTP-Deploy-Action@v4.3.0
         with:
           server: ${{ secrets.KINGHOST_SERVER }}
@@ -38,14 +22,6 @@ jobs:
           port: 21
           protocol: ftp
           security: loose
-          local-dir: ./deploy_package/
+          local-dir: ./deploy_test/
           server-dir: /www/
-          dangerous-clean-slate: true
           state-name: none
-          exclude: |
-            **/.git*
-            **/.github*
-            **/node_modules/**
-            **/storage/**
-            **/tests/**
-            **/*.env
