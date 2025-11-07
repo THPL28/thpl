@@ -1,0 +1,27 @@
+name: 🧪 Teste Deploy FTP (KingHost)
+
+on:
+  workflow_dispatch: 
+
+jobs:
+  test-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Criar arquivo de teste
+        run: |
+          mkdir -p deploy_test
+          echo "Deploy automático funcionando em $(date)" > deploy_test/teste_upload.txt
+
+      - name: Enviar arquivo para servidor FTP KingHost
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.0
+        with:
+          server: ${{ secrets.KINGHOST_SERVER }}
+          username: ${{ secrets.KINGHOST_USER }}
+          password: ${{ secrets.KINGHOST_PASSWORD }}
+          port: 21
+          protocol: ftp
+          security: loose
+          local-dir: ./deploy_test/
+          server-dir: /www/
+          state-name: none
