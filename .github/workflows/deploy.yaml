@@ -25,9 +25,9 @@ jobs:
 
       - name: Preparar pacote de deploy
         run: |
-          mkdir -p deploy_package/www
-          rsync -av --exclude='.git*' --exclude='node_modules' --exclude='tests' --exclude='storage' --exclude='.github' --exclude='.env' ./ deploy_package/www/
-          echo "${{ secrets.ENV_FILE }}" > deploy_package/www/.env
+          mkdir -p deploy_package
+          rsync -av --exclude='.git*' --exclude='node_modules' --exclude='tests' --exclude='.github' --exclude='.env' ./ deploy_package/
+          echo "${{ secrets.ENV_FILE }}" > deploy_package/.env
 
       - name: Enviar para servidor FTP KingHost
         uses: SamKirkland/FTP-Deploy-Action@v4.3.0
@@ -38,8 +38,8 @@ jobs:
           port: 21
           protocol: ftp
           security: loose
-          local-dir: ./deploy_package/www/
-          server-dir: /
+          local-dir: ./deploy_package/
+          server-dir: /www/
           dangerous-clean-slate: true
           state-name: none
           exclude: |
