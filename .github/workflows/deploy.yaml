@@ -25,13 +25,8 @@ jobs:
 
       - name: Preparar pacote de deploy
         run: |
-          # 1. Cria o diretório local para o pacote de deploy
           mkdir -p deploy_package/www
-          
-        
           rsync -av --exclude='.git*' --exclude='node_modules' --exclude='tests' --exclude='storage' --exclude='.github' --exclude='.env' ./ deploy_package/www/
-          
-          # 3. Adiciona o arquivo .env
           echo "${{ secrets.ENV_FILE }}" > deploy_package/www/.env
 
       - name: Enviar para servidor FTP KingHost
@@ -44,8 +39,9 @@ jobs:
           protocol: ftp
           security: loose
           local-dir: ./deploy_package/www/
-          server-dir: www/
+          server-dir: /
           dangerous-clean-slate: true
+          state-name: none
           exclude: |
             **/.git*
             **/.github*
